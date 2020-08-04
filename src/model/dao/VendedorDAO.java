@@ -12,5 +12,5 @@ public interface VendedorDAO {
 	void deletarPorId(Integer id);
 	Vendedor buscarPorId(Integer id);
 	List<Vendedor> listar();
- 
+	List<Vendedor> listarPorDepartamento(Departamento departamento);
 }
