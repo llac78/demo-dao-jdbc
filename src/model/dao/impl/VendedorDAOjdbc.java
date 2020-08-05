@@ -97,8 +97,43 @@ public class VendedorDAOjdbc implements VendedorDAO {
 
 	@Override
 	public List<Vendedor> listar() {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		try {
+			st = conn.prepareStatement(
+					"SELECT seller.*,department.Name as DepName "
+					+ "FROM seller INNER JOIN department "
+					+ "ON seller.DepartmentId = department.Id "
+					+ "ORDER BY Name");
+			
+			rs = st.executeQuery();
+			
+			List<Vendedor> lista = new ArrayList<>();
+			Map<Integer, Departamento> map = new HashMap<>();
+			
+			while(rs.next()) {
+				Departamento depart = map.get(rs.getInt("DepartmentId"));
+				
+				if(depart == null) {
+					depart = instanciarDepartamento(rs);
+					map.put(rs.getInt("DepartmentId"), depart);
+				}
+				
+				Vendedor vend = instanciarVendedor(rs, depart);
+				lista.add(vend);
+				
+				return lista;
+			}
+			
+			return null;
+			
+		} catch (SQLException e) {
+			throw new DBException(e.getMessage());
+		} finally {
+			DB.fecharStatement(st);
+			DB.fecharResultSet(rs);
+		}
 	}
 
 	@Override
@@ -128,8 +163,8 @@ public class VendedorDAOjdbc implements VendedorDAO {
 					map.put(rs.getInt("DepartmentId"), depart);
 				}
 				
-				Departamento dep = instanciarDepartamento(rs);
-				Vendedor vend = instanciarVendedor(rs, dep);
+				Vendedor vend = instanciarVendedor(rs, depart);
+				lista.add(vend);
 				
 				return lista;
 			}
@@ -142,8 +177,6 @@ public class VendedorDAOjdbc implements VendedorDAO {
 			DB.fecharStatement(st);
 			DB.fecharResultSet(rs);
 		}
-		
-		
 		
 	}
 
