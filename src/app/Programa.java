@@ -1,7 +1,5 @@
 package app;
 
-import java.util.Date;
-
 import db.DB;
 import model.dao.DAOFactory;
 import model.dao.VendedorDAO;
